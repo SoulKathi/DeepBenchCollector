@@ -27,14 +27,22 @@ def extract_timings(bench_out, inference=False):
                     results.append(int(fwd_time))
     else:
         res_line = re.compile(r"^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)" +
+                              r"\s+(\d+)\s+(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\w+)\s*$")
+        pad_line = re.compile(r"^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)" +
                               r"\s+(\d+)\s+(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\w+)\s*$")
         for line in bench_out.splitlines():
             print(line)
             match = res_line.match(line)
             if match:
                 w, h, c, n, k, f_w, f_h, pad_w, pad_h, stride_w, stride_h, precision, \
-                fwd_time, bwd_in_time, bwd_par_time, time, pad_kernels, fwd_algo = match.groups()
+                fwd_time, bwd_in_time, bwd_par_time, time, fwd_algo = match.groups()
                 results.append(int(time))
+            else:
+                match = pad_line.match(line)
+                if match:
+                    w, h, c, n, k, f_w, f_h, pad_w, pad_h, stride_w, stride_h, precision, \
+                    fwd_time, bwd_in_time, bwd_par_time, time, pad_kernels, fwd_algo = match.groups()
+                    results.append(int(time))
     return results
 
 
@@ -56,4 +64,9 @@ def run_conv(runs=3):
 
 
 if __name__ == "__main__":
-    print("\n".join(run_conv()))
+    runs = 3
+    conv_results = run_conv(runs=runs)
+    print(".---------------------------------------------------.")
+    print("| Benchmark results (geometric mean over all tests) |")
+    print("'---------------------------------------------------'")
+    print("\n".join(conv_results))
