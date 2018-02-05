@@ -40,4 +40,9 @@ def run_gemm(runs=3):
 
 
 if __name__ == "__main__":
-    print("\n".join(run_gemm(1)))
+    runs = 3
+    gemm_results = run_gemm(runs=runs)
+    print(".---------------------------------------------------.")
+    print("| Benchmark results (geometric mean over all tests) |")
+    print("'---------------------------------------------------'")
+    print("\n".join(gemm_results))
